@@ -1,83 +1,35 @@
-Welcome to WebNavigator
+WebNavigator - an HTML 4 browser with style sheets (CSS 2) for the desktop
 
-What is WebNavigator?
-A HTML 4.0 browser with Cascading Style Sheets for ETH Oberon.
+Open a page (http:// and file:// addresses; there is no HTTPS):
+  Desktops.OpenDoc "file://WebNavigatorAbout.html" (WebNavDocs.NewDoc) ~
+  Desktops.OpenDoc "file://WebNavTables.html" (WebNavDocs.NewDoc) ~
+  Desktops.OpenDoc "file://WebNavFonts.html" (WebNavDocs.NewDoc) ~
+  Desktops.OpenDoc "http://info.cern.ch/" (WebNavDocs.NewDoc) ~
 
-Where to get WebNavigator?
-http://www.oberon.ethz.ch/software/WebNavigator.html
+A middle click on a link follows it; Back in the menu bar goes to the page before,
+Reload loads the page again.
 
-Documentation
-WebNavigator.Text (out of date)
+To open every http and file address with WebNavigator, change the section
+DocumentServices of Oberon.Text:
+  http = HTTPDocs.NewDoc    becomes    http = WebNavDocs.NewDoc
+  file = HyperDocs.NewDoc   becomes    file = WebNavDocs.NewDoc
 
-Demo
-Desktops.OpenDoc "file://WebNavigatorAbout.html" (WebNavDocs.NewDoc) ~
-Desktops.OpenDoc "http://www.oberon.ethz.ch/" (WebNavDocs.NewDoc)
-Desktops.OpenDoc "http://www.inf.ethz.ch/" (WebNavDocs.NewDoc)
-Desktops.OpenDoc "http://www.sun.com/" (WebNavDocs.NewDoc)
-Desktops.OpenDoc "http://www.informatik.uni-bremen.de/" (WebNavDocs.NewDoc)
+An older panel of the browser, not kept up to date:
+  Gadgets.Insert WebNavigators.NewPanel ~
 
-Gadgets.Insert WebNavigators.NewPanel ~ 
+The diploma thesis behind it (in German, partly out of date):
+  Edit.Open WebNavigator.Text
 
-Installation
-Compress.ExtractAll WebNavBeta3.Arc ~
-
-Compiler.Compile \2s 
-	WebUtils.Mod   WebNetwork.Mod   WebPieces.Mod
-	WebSGMLScanner.Mod   WebSGML.Mod 
-	WebHTML4Scanner.Mod WebHTML4.Mod 
-	WebCSS2.Mod   WebCSS2Scanner.Mod   WebCSS2P.Mod   WebCSS2Format.Mod   WebCSS2B.Mod 
-	WebNavDocs.Mod ~
-	
-	WebNavigators.Mod	{ not up to date! }
-	
-If you want to make NavDocs the default for HTML documents edit Oberon.Text and make the
-following changes in the DocumentServices section:
-
-	file = HyperDocs.NewDoc	-->    file = WebNavDocs.NewDoc
-	http = HTTPDocs.NewDoc	-->    http = WebNavDocs.NewDoc
-	
-
-Unload
-System.Free WebNavigators WebNavDocs WebCSS2B WebCSS2Format WebCSS2P WebCSS2Scanner WebCSS2 
-	WebHTML4 WebSGML WebSGMLScanner WebHTML4Scanner WebPieces WebNetwork WebUtils~
-
-Create distribution
-System.DeleteFiles WebNavBeta4.Arc ~
-Compress.Add WebNavBeta4.Arc 
-	WebUtils.Mod   WebNetwork.Mod   WebPieces.Mod
-	WebSGMLScanner.Mod   WebSGML.Mod 
-	WebHTML4Scanner.Mod WebHTML4.Mod 
-	WebCSS2.Mod WebCSS2Scanner.Mod WebCSS2P.Mod WebCSS2Format.Mod WebCSS2B.Mod 
-	WebNavigators.Mod WebNavDocs.Mod 
-	
-	WebHTML4Loose.SGML   WebHTML4.CSS   
-	WebNavigatorAbout.html   WebNotFound.html   WebNotSupported.html
-	WebNav.gif   WebNavSmall.gif   WebNavFonts.html   WebNavTables.html 
-	WebNavigator.Text   WebNavigator.Tool ~
-
-Note: use EditTools.OpenAscii ^ and EditTools.StoreAscii * to edit .html files.
+Unload:
+  System.Free WebNavigators WebNavDocs WebCSS2B WebCSS2Format WebCSS2P WebCSS2Scanner
+    WebCSS2 WebHTML4 WebSGML WebSGMLScanner WebHTML4Scanner WebPieces WebNetwork WebUtils ~
 
 History
-
-21.12.1998	Bruno Eberhard	Diplomarbeit started
-
-20.04.1999	Bruno Eberhard	Diplomarbeit ended
-	"http://www.cs.inf.ethz.ch/gutknecht/stud_work/1998WS_eberhard/HTML4.Arc"
-	"http://www.cs.inf.ethz.ch/gutknecht/stud_work/1998WS_eberhard/Dokumentation.Text"
-	"http://www.cs.inf.ethz.ch/gutknecht/stud_work/1998WS_eberhard/HTML4T.ARC"
-
-??.??.1999	Bruno Eberhard	Maintanance
-
-04.04.2000	prk	Placed on web
-25.05.2000	pjm	Beta release 1
-30.05.2000	pjm	Beta release 2 (tool fixed)
-27.11.2000	g.f.	Beta release 3 (network interface added, 'Back' added to Menu bar of WebNavDocs)
-10.12.2000	g.f.	Beta release 4 (border handling fixed, appropriation of links to frames fixed)
-
-To do
-o big: user interface: enter URL, Back, Forward, Reload
-o medium: implement printing
-o medium: clever update - no flicker (Images?)
-o small: <P> should generate line space
-o small: fix list numbering
-o small: use Courier font for <pre>
+  21.12.1998  Bruno Eberhard  diploma thesis started (ETH Zurich, J. Gutknecht, E. Zeller)
+  20.04.1999  Bruno Eberhard  diploma thesis ended
+  04.04.2000  prk             placed on the web
+  25.05.2000  pjm             beta release 1
+  30.05.2000  pjm             beta release 2
+  27.11.2000  g.f.            beta release 3 (network interface, Back in the menu bar)
+  10.12.2000  g.f.            beta release 4 (borders, links to frames)
+  2026        polpo           runs on all ports of polpo (see the commits)
