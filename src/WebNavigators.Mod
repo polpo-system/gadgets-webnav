@@ -84,7 +84,7 @@ VAR
 
 	PROCEDURE GetSource( url: ARRAY OF CHAR ): Files.File;  
 	VAR f: Files.File;  R: Files.Rider;  key: LONGINT;  
-		fname: ARRAY 128 OF CHAR;  
+		fname, dtyp: ARRAY 128 OF CHAR;  
 		i, j: INTEGER;  ch: CHAR;  
 	BEGIN 
 		IF pref( "file://", url ) THEN 
@@ -92,7 +92,7 @@ VAR
 			REPEAT ch := url[i + 7];  fname[i] := ch;  INC( i ) UNTIL ch = 0X;  
 			f := Files.Old( fname );  
 		ELSE 
-			f := Network.RequestDoc( url );
+			f := Network.RequestDoc( url, dtyp );
 		END;  
 		IF f = NIL THEN 
 			f := Files.Old( "WebNotFound.html" );  
