@@ -9,7 +9,7 @@ MODULE WebNetwork;
 *)
 
 IMPORT Kernel, Input, NetSystem, NetTools, Strings, HyperDocs, Texts, Oberon, Attributes, HTTPDocs0, 
-	Streams,   MIME, Files, Objects, Out;  
+	Streams,   MIME, Files, Objects, Out, http, httpsPure, strTypes, U := WebUtils;  
 
 
 CONST 
@@ -380,11 +380,178 @@ VAR
 		RETURN status
 	END Connect;  
 
+	(* polpo: http and https through the modules http and httpsPure (TLS 1.3 in Oberon), redirects
+		followed; HTTPDocs0 and NetTools only for a proxy (HTTPProxy in Oberon.Text) *)
+
+	PROCEDURE SplitURL( VAR url: ARRAY OF CHAR;  VAR secure: BOOLEAN;  VAR host, port, path: ARRAY OF CHAR ): BOOLEAN;  
+	VAR i, j: LONGINT;  
+	BEGIN 
+		i := 0;  secure := FALSE;  
+		WHILE (url[i] # 0X) & (url[i] # ":") DO INC( i ) END;  
+		IF (url[i] # ":") OR (url[i + 1] # "/") OR (url[i + 2] # "/") THEN RETURN FALSE END;  
+		IF (i = 5) & (CAP( url[4] ) = "S") THEN secure := TRUE ELSIF i # 4 THEN RETURN FALSE END;  
+		INC( i, 3 );  j := 0;  
+		IF url[i] = "[" THEN  (* [IPv6 address] *)
+			INC( i );  
+			WHILE (url[i] # 0X) & (url[i] # "]") & (j < LEN( host ) - 1) DO host[j] := url[i];  INC( i );  INC( j ) END;  
+			IF url[i] = "]" THEN INC( i ) END 
+		ELSE 
+			WHILE (url[i] # 0X) & (url[i] # ":") & (url[i] # "/") & (j < LEN( host ) - 1) DO host[j] := url[i];  INC( i );  INC( j ) END 
+		END;  
+		host[j] := 0X;  j := 0;  
+		IF url[i] = ":" THEN 
+			INC( i );  
+			WHILE (url[i] >= "0") & (url[i] <= "9") & (j < LEN( port ) - 1) DO port[j] := url[i];  INC( i );  INC( j ) END 
+		END;  
+		port[j] := 0X;  
+		IF port[0] = 0X THEN 
+			IF secure THEN COPY( "443", port ) ELSE COPY( "80", port ) END 
+		END;  
+		j := 0;  
+		IF url[i] # "/" THEN path[0] := "/";  j := 1 END;  
+		WHILE (url[i] # 0X) & (url[i] # "#") & (j < LEN( path ) - 1) DO path[j] := url[i];  INC( i );  INC( j ) END;  
+		path[j] := 0X;  
+		RETURN host[0] # 0X
+	END SplitURL;  
+
+	(* does s contain t, letters of any case *)
+	PROCEDURE Has( VAR s: ARRAY OF CHAR;  t: ARRAY OF CHAR ): BOOLEAN;  
+	VAR i, j: LONGINT;  
+	BEGIN 
+		i := 0;  
+		WHILE s[i] # 0X DO 
+			j := 0;  WHILE (t[j] # 0X) & (CAP( s[i + j] ) = CAP( t[j] )) DO INC( j ) END;  
+			IF t[j] = 0X THEN RETURN TRUE END;  
+			INC( i )
+		END;  
+		RETURN FALSE
+	END Has;  
+
+	(* the length of the UTF-8 sequence at b[i] (0: not one) and its code point *)
+	PROCEDURE UTF8( VAR b: ARRAY OF CHAR;  i, len: LONGINT;  VAR code: LONGINT ): LONGINT;  
+	VAR c, n, k: LONGINT;  
+	BEGIN 
+		c := ORD( b[i] );  
+		IF c < 80H THEN code := c;  RETURN 1
+		ELSIF c DIV 20H = 6 THEN code := c MOD 20H;  n := 2
+		ELSIF c DIV 10H = 0EH THEN code := c MOD 10H;  n := 3
+		ELSIF c DIV 8 = 1EH THEN code := c MOD 8;  n := 4
+		ELSE RETURN 0
+		END;  
+		IF i + n > len THEN RETURN 0 END;  
+		k := 1;  
+		WHILE k < n DO 
+			c := ORD( b[i + k] );  
+			IF c DIV 40H # 2 THEN RETURN 0 END;  
+			code := code * 40H + c MOD 40H;  INC( k )
+		END;  
+		RETURN n
+	END UTF8;  
+
+	PROCEDURE ValidUTF8( VAR b: ARRAY OF CHAR;  len: LONGINT ): BOOLEAN;  
+	VAR i, n, code: LONGINT;  multi: BOOLEAN;  
+	BEGIN 
+		i := 0;  multi := FALSE;  
+		WHILE i < len DO 
+			n := UTF8( b, i, len, code );  
+			IF n = 0 THEN RETURN FALSE END;  
+			IF n > 1 THEN multi := TRUE END;  
+			INC( i, n )
+		END;  
+		RETURN multi
+	END ValidUTF8;  
+
+	(* a character of the Oberon fonts for a code point: the accented letters they have, others
+		without their accents, typographic punctuation as ASCII, else "?" *)
+	PROCEDURE OberonChar( code: LONGINT ): CHAR;  
+	VAR latin: ARRAY 65 OF CHAR;  ch: CHAR;  
+	BEGIN 
+		IF code < 80H THEN RETURN CHR( code )
+		ELSIF (code >= 2002H) & (code <= 200AH) THEN RETURN " "
+		ELSIF (code >= 201CH) & (code <= 201FH) THEN RETURN 22X
+		ELSIF (code >= 2018H) & (code <= 201BH) OR (code = 2032H) THEN RETURN "'"
+		ELSIF (code >= 2010H) & (code <= 2015H) OR (code = 2212H) THEN RETURN "-"
+		ELSIF code = 2022H THEN RETURN "*"
+		ELSIF code = 2026H THEN RETURN "."
+		ELSIF code > 0FFH THEN RETURN "?"
+		END;  
+		CASE code OF 
+		  0C4H: RETURN 80X
+		| 0D6H: RETURN 81X
+		| 0DCH: RETURN 82X
+		| 0E4H: RETURN 83X
+		| 0F6H: RETURN 84X
+		| 0FCH: RETURN 85X
+		| 0E2H: RETURN 86X
+		| 0EAH: RETURN 87X
+		| 0EEH: RETURN 88X
+		| 0F4H: RETURN 89X
+		| 0FBH: RETURN 8AX
+		| 0E0H: RETURN 8BX
+		| 0E8H: RETURN 8CX
+		| 0ECH: RETURN 8DX
+		| 0F2H: RETURN 8EX
+		| 0F9H: RETURN 8FX
+		| 0E9H: RETURN 90X
+		| 0EBH: RETURN 91X
+		| 0EFH: RETURN 92X
+		| 0E7H: RETURN 93X
+		| 0E1H: RETURN 94X
+		| 0F1H: RETURN 95X
+		| 0DFH: RETURN 96X
+		| 0A0H: RETURN " "
+		| 0ABH, 0BBH: RETURN 22X
+		| 0B7H: RETURN "*"
+		| 0A9H: RETURN "c"
+		| 0AEH: RETURN "r"
+		| 0D7H: RETURN "x"
+		| 0C0H .. 0C3H, 0C5H .. 0D5H, 0D8H .. 0DBH, 0DDH, 0DEH, 0E3H, 0E5H, 0E6H, 0EDH, 0F0H, 0F3H, 0F5H, 0F8H, 0FAH, 0FDH .. 0FFH: 
+			latin := "AAAAAAACEEEEIIIIDNOOOOOxOUUUUYPsaaaaaaaceeeeiiiidnooooo/ouuuuypy";  
+			ch := latin[code - 0C0H];  RETURN ch
+		ELSE RETURN "?"
+		END
+	END OberonChar;  
+
+	(* GET url (http or https), redirects followed; the body in a file without a name, doctype "text"
+		(HTML) or "image"; NIL if there is no page *)
+	PROCEDURE Fetch( url: ARRAY OF CHAR;  VAR doctype: ARRAY OF CHAR ): Files.File;  
+	VAR h: http.Client;  body: strTypes.pstring;  F: Files.File;  R: Files.Rider;  
+		host: ARRAY 256 OF CHAR;  port: ARRAY 8 OF CHAR;  path, u, v: ARRAY 1024 OF CHAR;  
+		secure, utf8: BOOLEAN;  n, i, len, code: LONGINT;  
+	BEGIN 
+		COPY( "text", doctype );  COPY( url, u );  n := 0;  
+		LOOP 
+			IF ~SplitURL( u, secure, host, port, path ) THEN RETURN NIL END;  
+			IF secure THEN h := httpsPure.Create( host, port, path ) ELSE h := http.Create( host, port, path ) END;  
+			body := h.Get( h );  
+			IF (body = NIL) OR (h.rspnCode < 300) OR (h.rspnCode >= 400) OR (h.rspnLocation = NIL) OR (n = 5) THEN EXIT END;  
+			U.NewUrl( u, h.rspnLocation^, v );  COPY( v, u );  INC( n )
+		END;  
+		len := h.rspnContentLength;  utf8 := FALSE;  
+		IF (body = NIL) OR (h.rspnCode < 200) OR (len <= 0) THEN RETURN NIL END;  (* the page of an error is shown too *)
+
+		IF (h.rspnContentType # NIL) & Has( h.rspnContentType^, "image/" ) THEN COPY( "image", doctype )
+		ELSIF (h.rspnContentType # NIL) & ~Has( h.rspnContentType^, "html" ) THEN RETURN Files.Old( "WebNotSupported.html" )
+		ELSIF (h.rspnContentType # NIL) & Has( h.rspnContentType^, "charset" ) THEN utf8 := Has( h.rspnContentType^, "utf-8" )
+		ELSE utf8 := ValidUTF8( body^, len )
+		END;  
+		F := Files.New( "" );  Files.Set( R, F, 0 );  i := 0;  
+		WHILE i < len DO 
+			IF utf8 THEN 
+				n := UTF8( body^, i, len, code );  
+				IF n = 0 THEN Files.Write( R, "?" );  INC( i ) ELSE Files.Write( R, OberonChar( code ) );  INC( i, n ) END 
+			ELSE Files.Write( R, body[i] );  INC( i )
+			END 
+		END;  
+		RETURN F
+	END Fetch;  
+
 	PROCEDURE RequestDoc*( url: ARRAY OF CHAR; VAR doctype: ARRAY OF CHAR ): Files.File;  
 	VAR C: NetSystem.Connection;  cont: MIME.Content;  status: LONGINT;  T: Texts.Text;  F: Files.File;  R: Files.Rider;  
 		i: LONGINT;  M: Objects.CopyMsg;  useProxy: BOOLEAN;  ch: CHAR;  
 		key: LONGINT; t: ARRAY 16 OF CHAR;
 	BEGIN 
+		IF (HTTPDocs0.httpProxy = NIL) OR Strings.Prefix( "https:", url ) THEN RETURN Fetch( url, doctype ) END;  
 		key := HyperDocs.BuildKey( NIL , url );  
 		IF key = HyperDocs.UndefKey THEN RETURN NIL END;
 		
