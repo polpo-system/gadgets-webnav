@@ -25,102 +25,102 @@ TYPE
 	Break* = POINTER TO BreakDesc;  
 	
 	ObjectDesc* = RECORD 
-			next-: Object;  
+			next*: Object;  
 			
-			top-, right-, bottom-, left-, width-, height-: CSS2.Term;  
+			top*, right*, bottom*, left*, width*, height*: CSS2.Term;  
 			
-			backgroundFixed-: BOOLEAN;  
-			backgroundColor-: LONGINT;  
-			backgroundImage-: Pieces.Piece;  
-			backgroundPositionH-, backgroundPositionV-: CSS2.Term;  
-			backgroundRepeatH-, backgroundRepeatV-: BOOLEAN;  
+			backgroundFixed*: BOOLEAN;  
+			backgroundColor*: LONGINT;  
+			backgroundImage*: Pieces.Piece;  
+			backgroundPositionH*, backgroundPositionV*: CSS2.Term;  
+			backgroundRepeatH*, backgroundRepeatV*: BOOLEAN;  
 			
-			borderColor-: ARRAY 4 OF LONGINT;  
-			borderStyle-: ARRAY 4 OF SHORTINT;  
-			borderWidth-: ARRAY 4 OF CSS2.Term;  
+			borderColor*: ARRAY 4 OF LONGINT;  
+			borderStyle*: ARRAY 4 OF SHORTINT;  
+			borderWidth*: ARRAY 4 OF CSS2.Term;  
 			
-			color-: LONGINT;  
+			color*: LONGINT;  
 			(* content *)
 			(* counterIncrement *)
 			(* counterReset *)
-			(* cursor- : INTEGER; *)
-			directionLTR-: BOOLEAN;  
-			display-: SHORTINT;  
-			font-: Fonts.Font;  
-			markerOffset-: CSS2.Term;  
+			(* cursor* : INTEGER; *)
+			directionLTR*: BOOLEAN;  
+			display*: SHORTINT;  
+			font*: Fonts.Font;  
+			markerOffset*: CSS2.Term;  
 			
-			margin-: ARRAY 4 OF CSS2.Term;  
-			maxHeight-, maxWidth-, minWidth-, minHeight-: CSS2.Term;  
-			MinCW-, MaxCW-: LONGINT;   (* see CSS2, P. 257 *)
-			padding-: ARRAY 4 OF CSS2.Term;  
-			quotes-: ARRAY 2 OF CHAR;  
+			margin*: ARRAY 4 OF CSS2.Term;  
+			maxHeight*, maxWidth*, minWidth*, minHeight*: CSS2.Term;  
+			MinCW*, MaxCW*: LONGINT;   (* see CSS2, P. 257 *)
+			padding*: ARRAY 4 OF CSS2.Term;  
+			quotes*: ARRAY 2 OF CHAR;  
 			
-			textDecoration-: SET;  
-			textDecorationColor-: LONGINT;  
+			textDecoration*: SET;  
+			textDecorationColor*: LONGINT;  
 			
 			(* textShadow *)
-			textTransform-: SET;  
-			(* unicodeBidi- : INTEGER ; *)
+			textTransform*: SET;  
+			(* unicodeBidi* : INTEGER ; *)
 			
-			visibility-: SHORTINT;  
-			wordSpacing-: CSS2.Term;  
-			(* zIndex- : Len ; *)
+			visibility*: SHORTINT;  
+			wordSpacing*: CSS2.Term;  
+			(* zIndex* : Len ; *)
 			
-			href-, target-, anchor-: Pieces.Piece;  
+			href*, target*, anchor*: Pieces.Piece;  
 	END;  
 	
 	BlockDesc* = RECORD (ObjectDesc)
-			dsc-: Dsc;  
+			dsc*: Dsc;  
 			
-			clearLeft-, clearRight-: BOOLEAN;  
-			clip-: Pieces.Piece;  
-			overflow-: SHORTINT;  
-			position-: SHORTINT;  
+			clearLeft*, clearRight*: BOOLEAN;  
+			clip*: Pieces.Piece;  
+			overflow*: SHORTINT;  
+			position*: SHORTINT;  
 	END;  
 	
 	DscDesc* = RECORD 
 	END;  
 	
 	LinesDesc* = RECORD (DscDesc);  
-			inlines-: Inline;  
-			lineHeight-: LONGINT;   (* minimale H„he aller Linien (CSS2, 142) *)
-			textAlign-: CSS2.Term;  
-			textIndent-: CSS2.Term;  
-			whiteSpacePre-: BOOLEAN;  
+			inlines*: Inline;  
+			lineHeight*: LONGINT;   (* minimale H„he aller Linien (CSS2, 142) *)
+			textAlign*: CSS2.Term;  
+			textIndent*: CSS2.Term;  
+			whiteSpacePre*: BOOLEAN;  
 	END;  
 	
 	PrincipalDesc* = RECORD (DscDesc)
-			dsc-: Block;  
+			dsc*: Block;  
 	END;  
 	
 	FloatDesc* = RECORD (BlockDesc)
-			floatLeft-, floatRight-: BOOLEAN;  
+			floatLeft*, floatRight*: BOOLEAN;  
 	END;  
 	
 	InlineDesc* = RECORD (ObjectDesc)
-			floats-: Float;  
-			absoluts-: Block;  
-			fixeds-: Block;  
-			letterSpacing-: CSS2.Term;  
-			lineHeight-: LONGINT;   (* H„he des Elements *)
-			verticalAlign-: LONGINT;  
-			verticalAlignType-: SET;  
-			piece-: Pieces.Piece;  
+			floats*: Float;  
+			absoluts*: Block;  
+			fixeds*: Block;  
+			letterSpacing*: CSS2.Term;  
+			lineHeight*: LONGINT;   (* H„he des Elements *)
+			verticalAlign*: LONGINT;  
+			verticalAlignType*: SET;  
+			piece*: Pieces.Piece;  
 	END;  
 	
 	TableDesc* = RECORD (BlockDesc)
-			colGroups-: ColGroup;  
-			cols-: Col;  
-			rowGroups-, lastRowGroup: RowGroup;  
-			rows-: Row;  
-			captionSide-: SHORTINT;  
-			caption-: Block;  
-			numberOfCols-: LONGINT;  
+			colGroups*: ColGroup;  
+			cols*: Col;  
+			rowGroups*, lastRowGroup: RowGroup;  
+			rows*: Row;  
+			captionSide*: SHORTINT;  
+			caption*: Block;  
+			numberOfCols*: LONGINT;  
 			
-			borderCollapse-: BOOLEAN;  
-			borderSpacingX-, borderSpacingY-: CSS2.Term;  
-			cellPadding-: CSS2.Term;  
-			tableLayoutFixed-: BOOLEAN;  
+			borderCollapse*: BOOLEAN;  
+			borderSpacingX*, borderSpacingY*: CSS2.Term;  
+			cellPadding*: CSS2.Term;  
+			tableLayoutFixed*: BOOLEAN;  
 			
 			lastCellOfActualRow: Cell;  
 			actualRow: Row;  
@@ -129,7 +129,7 @@ TYPE
 	END;  
 	
 	ColGroupDesc* = RECORD (ObjectDesc)
-			firstCol-, lastCol-: Col;  
+			firstCol*, lastCol*: Col;  
 	END;  
 	
 	ColDesc* = RECORD (ObjectDesc)
@@ -139,34 +139,34 @@ TYPE
 	END;  
 	
 	RowGroupDesc* = RECORD (ObjectDesc)
-			firstRow-, lastRow-: Row;  
+			firstRow*, lastRow*: Row;  
 	END;  
 	
 	RowDesc* = RECORD (BlockDesc)
-			cells-: Cell;  
+			cells*: Cell;  
 	END;  
 	
 	CellDesc* = RECORD (BlockDesc)
-			emptyCellsShow-: BOOLEAN;  
-			rowspan-, colspan-: LONGINT;  
+			emptyCellsShow*: BOOLEAN;  
+			rowspan*, colspan*: LONGINT;  
 	END;  
 	
 	CaptionDesc* = RECORD (BlockDesc)
 	END;  
 	
 	ListItemDesc* = RECORD (BlockDesc)
-			listStyleImage-: CSS2.Term;  
-			listStylePositionOutside-: BOOLEAN;  
-			listStyleType-: SHORTINT;  
-			counter-: LONGINT;  
+			listStyleImage*: CSS2.Term;  
+			listStylePositionOutside*: BOOLEAN;  
+			listStyleType*: SHORTINT;  
+			counter*: LONGINT;  
 	END;  
 	
 	ImageDesc* = RECORD (InlineDesc)
-			image-: Pictures.Picture;  
+			image*: Pictures.Picture;  
 	END;  
 	
 	FloatImageDesc* = RECORD (FloatDesc)
-			image-: Pictures.Picture;  
+			image*: Pictures.Picture;  
 	END;  
 	
 	BreakDesc* = RECORD (InlineDesc)

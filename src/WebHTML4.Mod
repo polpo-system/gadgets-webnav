@@ -25,18 +25,18 @@ TYPE
 	Attribute = POINTER TO AttributeDesc;  
 	
 	ObjectDesc* = RECORD 
-			next-: Object;  
+			next*: Object;  
 	END;  
 	
 	ElementDescr* = RECORD (ObjectDesc);  
-			parent-: Element;  
-			type-: SGML.ElementType;  
+			parent*: Element;  
+			type*: SGML.ElementType;  
 			attributes: Attribute;  
-			objects-, lastObject: Object;  
+			objects*, lastObject: Object;  
 	END;  
 	
 	PieceDesc* = RECORD (ObjectDesc)
-			piece-: Pieces.Piece;   (* Piece (of Text) or Element *)
+			piece*: Pieces.Piece;   (* Piece (of Text) or Element *)
 	END;  
 	
 	AttributeDesc = RECORD;  
@@ -48,14 +48,14 @@ TYPE
 TYPE 
 	Length* = POINTER TO LengthDesc;  
 	LengthDesc* = RECORD 
-			next-: Length;  
+			next*: Length;  
 			value: LONGINT;  
 			percent, asterix: BOOLEAN;  
-			len-: LONGINT;  
+			len*: LONGINT;  
 	END;  
 	
 	Lengths* = RECORD;  
-			first-, last: Length;  
+			first*, last: Length;  
 	END;  
 
 VAR 

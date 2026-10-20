@@ -5,9 +5,9 @@ IMPORT Files, Strings, Out;
 TYPE 
 	Piece* = POINTER TO PieceDesc;  
 	PieceDesc* = RECORD  		(* Die Textteilchen erben die Eigenschaften und besitzen keinen eigenen *)
-			f-: Files.File;  
-			off-: LONGINT;  
-			len-: LONGINT;  
+			f*: Files.File;  
+			off*: LONGINT;  
+			len*: LONGINT;  
 	END;  
 	
 	PROCEDURE New*( VAR obj: Piece );  

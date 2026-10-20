@@ -704,7 +704,7 @@ VAR
 					additionalMinWidth := (cellMinWidth - actualMinWidth);
 					rest := additionalMinWidth;
 					FOR i := 1 TO cell.colspan DO
-						IF c = NIL THEN HALT(27) END;
+						IF c = NIL THEN HALT(100) END;
 						IF i < cell.colspan THEN
 							INC(c.minColWidth, additionalMinWidth DIV cell.colspan);
 							DEC(rest, additionalMinWidth DIV cell.colspan);

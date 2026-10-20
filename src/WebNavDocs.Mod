@@ -346,7 +346,7 @@ VAR
 				ELSE D := F.doc
 				END
 			ELSIF M.dlink IS HTMLDocument THEN D := M.dlink( HTMLDocument );  
-			ELSE HALT( 29 )
+			ELSE HALT( 100 )
 			END;  
 			IF D # NIL THEN
 				obj := ConstructFrame( F.doc, F.url, link, "_top", "", BorderWidth );

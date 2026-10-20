@@ -210,7 +210,7 @@ BEGIN
 			sym := anAttribute; RETURN
 		END ;
 	ELSE
-		HALT(26)	
+		HALT(100)	
 	END (* IF state = .. *)
 
 	END (* LOOP *)
