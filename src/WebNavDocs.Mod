@@ -329,7 +329,7 @@ VAR
 	BEGIN 
 		Pieces.SplitLink( href, docname, anchor );  Pieces.Convert( docname, link );  
 		U.CleanURL( link );
-		IF prefixed( link ) & ~pref( "file://", link ) & ~pref( "http://", link ) THEN OpenDoc( link );  RETURN END;  
+		IF prefixed( link ) & ~pref( "file://", link ) & ~pref( "http://", link ) & ~pref( "https://", link ) THEN OpenDoc( link );  RETURN END;  
 		IF link # "" THEN 
 			IF M.dlink IS Panels.Panel THEN 
 				P := M.dlink( Panels.Panel );  Pieces.Convert( target, fname );
