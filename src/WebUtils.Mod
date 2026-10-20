@@ -88,7 +88,7 @@ TYPE
 				IF (url[i] = '/') & (bpath = 0) & (url[i - 1] # ':') & (url[i - 1] # '/') THEN bpath := i END;  
 				INC( i )
 			END;  
-			IF bpath = 0 THEN bpath := i 
+			url[i] := 0X;  IF bpath = 0 THEN bpath := i 
 			ELSE 
 				d := i; dnf := FALSE;
 				REPEAT 
