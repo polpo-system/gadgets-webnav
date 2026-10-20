@@ -2,7 +2,9 @@
 
 WebNavigator for the desktop of [polpo](https://github.com/polpo-system/polpo): an HTML 4 browser
 with Cascading Style Sheets (CSS 2). It lays out headings, paragraphs, lists, tables, frames and
-GIF pictures, follows links and fetches pages over HTTP. It has no HTTPS.
+GIF pictures, follows links and fetches pages over HTTP and HTTPS (TLS 1.3 of polpo's tls
+package), following redirects. Pages in UTF-8 are shown with the characters of the Oberon fonts.
+Scripts and most style sheets of today's pages are ignored.
 
 ```
 portia.Install gadgets-webnav
@@ -11,10 +13,11 @@ portia.Install gadgets-webnav
 ## Using
 
     Desktops.OpenDoc "file://WebNavigatorAbout.html" (WebNavDocs.NewDoc) ~
-    Desktops.OpenDoc "http://info.cern.ch/" (WebNavDocs.NewDoc) ~
+    Desktops.OpenDoc "https://info.cern.ch/" (WebNavDocs.NewDoc) ~
 
 A middle click on a link follows it; Back and Reload are in the menu bar of the document.
-`tools/WebNavigator.Tool` has more, also how to open every http and file address with it.
+`tools/WebNavigator.Tool` has more, also how to open every http and file address with it; in the
+desktop the finder lists it under Tools.
 
 ## What is here
 
@@ -27,7 +30,8 @@ A middle click on a link follows it; Back and Reload are in the menu bar of the 
     src/WebCSS2Scanner.Mod     style sheets (share/WebHTML4.CSS is the default one)
     src/WebCSS2.Mod
     src/WebCSS2P.Mod
-    src/WebNetwork.Mod         HTTP, through HTTPDocs0 and NetTools
+    src/WebNetwork.Mod         HTTP and HTTPS through the http and httpsPure modules (HTTPDocs0
+                               and NetTools for a proxy)
     src/WebCSS2Format.Mod      the tree with its styles into blocks and lines
     src/WebCSS2B.Mod           the layout into boxes, drawing
     src/WebNavDocs.Mod         the document (WebNavDocs.NewDoc)
@@ -42,7 +46,8 @@ released by ETH as WebNavBeta4.Arc in December 2000. The first commit has its fi
 (the sources and the tool text converted from Oberon texts to plain text). The later commits make
 it run with all of polpo's compilers: plain exports and HALT numbers, local variables set before
 they are read (the x86 compiler happened to leave zeros in them), the end of a URL, and a call in
-the older panel.
+the older panel. Then HTTPS, UTF-8 and pages of HTML 5 whose elements made the parser split the
+body.
 
 ## Tests
 
