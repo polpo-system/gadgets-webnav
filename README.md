@@ -15,9 +15,10 @@ portia.Install gadgets-webnav
     Desktops.OpenDoc "file://WebNavigatorAbout.html" (WebNavDocs.NewDoc) ~
     Desktops.OpenDoc "https://info.cern.ch/" (WebNavDocs.NewDoc) ~
 
-A middle click on a link follows it; Back and Reload are in the menu bar of the document.
-`tools/WebNavigator.Tool` has more, also how to open every http and file address with it; in the
-desktop the finder lists it under Tools.
+In the desktop the finder has the entry WebNavigator, which opens a start page with links (the
+file share/WebNavigator.Finder makes the entry). A middle click on a link follows it; Back and
+Reload are in the menu bar of the document. `tools/WebNavigator.Tool` has more, also how to open
+any address and every http and file address with it.
 
 ## What is here
 
@@ -37,7 +38,8 @@ desktop the finder lists it under Tools.
     src/WebNavDocs.Mod         the document (WebNavDocs.NewDoc)
     src/WebNavigators.Mod      an older panel of the browser
     share/                     the pages that come with it, pictures, the DTD, the style sheet,
-                               WebNavigator.Text (the diploma thesis, in German)
+                               WebNavigator.Text (the diploma thesis, in German), the start page
+                               WebNavStart.html and WebNavigator.Finder (the entry of the finder)
     tools/WebNavigator.Tool
     test/WebNavTest.Mod
 
