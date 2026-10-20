@@ -750,7 +750,7 @@ VAR
 				IF block = NIL THEN RETURN END;  
 				IF (block.dsc = NIL ) OR ~(block.dsc IS Lines) THEN RETURN END;  
 				
-				thisWord := 0;  largestWord := 0;  thisWordRel := 0;  inline := block.dsc( Lines ).inlines;  
+				thisWord := 0;  largestWord := 0;  thisWordRel := 0;  allWords := 0;  allWordsRel := 0;  inline := block.dsc( Lines ).inlines;  
 				WHILE inline # NIL DO 
 					
 					IF inline.margin[CSS2.left].unit = CSS2.percent THEN 

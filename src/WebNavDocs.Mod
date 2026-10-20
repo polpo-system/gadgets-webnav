@@ -469,7 +469,7 @@ VAR
 		Attributes.GetInt( P, "Border", border ); bw := SHORT( border );
 		DEC( H, 2*bw );  DEC( W, 2*bw );
 		IF vertical THEN total := H  ELSE total := W  END;  
-		rest := total; used := 0; 
+		rest := total; used := 0; sum := 0; asterixSum := 0; 
 		f := P.dsc;  
 		WHILE f # NIL DO 
 			ConvertFrameSize;  

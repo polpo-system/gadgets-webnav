@@ -1135,7 +1135,7 @@ VAR
 			MakeAlign;
 			IF firstLine THEN InsertItemMarker; firstLine := FALSE END;
 		
-			InsertRemainingFloats(height + lineHeight);
+			lineHeight := beforeOverlength + beforeUnderlength; InsertRemainingFloats(height + lineHeight);
 		
 			(* Move the rest *)
 			lineHeight := beforeOverlength + beforeUnderlength;
@@ -1174,7 +1174,7 @@ VAR
 		END ForcedBreak;
 	
 	BEGIN
-		breakPoint := FALSE; firstLine := TRUE;
+		breakPoint := FALSE; firstLine := TRUE; height := 0; lineFilled := 0; beforeLength := 0; beforeLengthInInline := 0; newStart := 0; breakLen := 0; breakOffset := 0; dx := 0; off := 0; ch := 0X; beforeOverlength := 0; beforeUnderlength := 0; afterOverlength := 0; afterUnderlength := 0;
 		inline := linesBlock.dsc(Format.Lines).inlines;
 		WHILE inline # NIL DO
 			FOR edge := CSS2.top TO CSS2.left DO
@@ -1364,7 +1364,7 @@ VAR
 	END HandleLines;
 	
 BEGIN
-	boxList := NIL; links := NIL; anchors := NIL;
+	boxList := NIL; links := NIL; anchors := NIL; maxH := 0; maxV := 0; margin := 0; marginZeroArray[0] := 0; marginZeroArray[1] := 0; marginZeroArray[2] := 0; marginZeroArray[3] := 0;
 	NEW(canvas);
 	canvas.left := 0; canvas.top := 0; canvas.width := width; canvas.height := 0; 
 	block := root; WHILE block # NIL DO

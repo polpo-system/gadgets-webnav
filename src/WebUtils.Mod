@@ -28,7 +28,7 @@ TYPE
 		PROCEDURE schar( ix: INTEGER ): CHAR;  
 		VAR i, s, v: INTEGER;  c: CHAR;  
 		BEGIN 
-			FOR i := 1 TO 2 DO 
+			s := 0; FOR i := 1 TO 2 DO 
 				c := url[ix + i];  
 				IF ('0' <= c) & (c <= '9') THEN v := ORD( c ) - 48 ELSE v := ORD( CAP( c ) ) - 55 END;  
 				s := s*16 + v

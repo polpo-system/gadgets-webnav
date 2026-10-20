@@ -65,7 +65,7 @@ VAR
 		i : INTEGER;
 		
 	BEGIN
-		Files.Read(R, ch); pos := Files.Pos(R);
+		Files.Read(R, ch); pos := Files.Pos(R); i := 0;
 		WHILE (i < LEN(name)-1) & (ch # ";") & ~R.eof DO
 			name[i] := ch; Files.Read(R, ch); INC(i)
 		END; name[i] := 0X; IF ch = ";" THEN Files.Read(R, ch) END;

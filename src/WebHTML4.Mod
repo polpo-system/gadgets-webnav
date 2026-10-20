@@ -303,7 +303,7 @@ VAR
 	PROCEDURE Len*( piece: Pieces.Piece ): LONGINT;  
 	VAR R: Files.Rider;  pos: LONGINT;  ch: CHAR;  len: LONGINT;  
 	BEGIN 
-		Files.Set( R, piece.f, piece.off );  len := 0;  Files.Read( R, ch );  INC( pos );  
+		Files.Set( R, piece.f, piece.off );  len := 0;  pos := 0;  Files.Read( R, ch );  INC( pos );  
 		IF pos > piece.len THEN RETURN 0 END;  
 		WHILE ~((ch < "0") OR (ch > "9")) DO 
 			IF len > MAX( LONGINT ) DIV 10 THEN RETURN MAX( LONGINT ) END;  
