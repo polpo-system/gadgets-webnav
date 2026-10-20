@@ -51,7 +51,8 @@ body.
 
 ## Tests
 
-    WebNavTest.Run      19 checks: URLs, two pages parsed and laid out, a document opened from a
+    WebNavTest.Run      21 checks: URLs, two pages parsed and laid out, a page of HTML 5, a
+                        document opened from a
                         file; it needs the desktop's display
 
 The license is GPL-3 (`LICENSE`); the code comes from ETH Oberon, whose license (`LICENSE.ETH`)

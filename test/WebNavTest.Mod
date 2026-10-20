@@ -1,4 +1,4 @@
-MODULE WebNavTest;  (** WebNavTest.Run: URLs, parsing, layout and a document of WebNavigator; needs the desktop's display *)
+MODULE WebNavTest;  (** WebNavTest.Run: URLs, parsing (HTML 5 too), layout and a document of WebNavigator; needs the desktop's display *)
 
 IMPORT Files, Objects, Gadgets, Documents, Out := out, U := WebUtils, HTML4 := WebHTML4, CSS2 := WebCSS2,
   CSS2P := WebCSS2P, Format := WebCSS2Format, CSS2B := WebCSS2B;
@@ -44,6 +44,20 @@ BEGIN
   END
 END Layout;
 
+(* a page of HTML 5: <title> inside <header> made the parser open a second BODY *)
+PROCEDURE Split;
+VAR f: Files.File; R: Files.Rider; s: ARRAY 128 OF CHAR; i: INTEGER; html, body: HTML4.Element;
+BEGIN
+  s := "<html><body><header><title>t</title></header><h1>x</h1></body></html>";
+  f := Files.New("zq_split.html"); Files.Set(R, f, 0); i := 0;
+  WHILE s[i] # 0X DO Files.Write(R, s[i]); INC(i) END;
+  Files.Register(f);
+  html := HTML4.Read(Files.Old("zq_split.html")); Check("zq_split.html", html # NIL);
+  IF html # NIL THEN
+    body := HTML4.ThisChild(html, "BODY"); Check("BODY with H1", (body # NIL) & (HTML4.ThisChild(body, "H1") # NIL))
+  END
+END Split;
+
 PROCEDURE Doc(url: ARRAY OF CHAR);
 VAR obj: Objects.Object; d: Documents.Document;
 BEGIN
@@ -60,7 +74,7 @@ BEGIN
   fails := 0; checks := 0;
   Urls;
   css := CSS2P.ReadStyleSheet(Files.Old("WebHTML4.CSS"), 0); Check("WebHTML4.CSS", css # NIL);
-  Layout("WebNavTables.html", css); Layout("WebNavFonts.html", css);
+  Layout("WebNavTables.html", css); Layout("WebNavFonts.html", css); Split;
   Doc("file://WebNavigatorAbout.html");
   Out.String("WebNavTest: "); Out.Int(checks, 0); Out.String(" checks, "); Out.Int(fails, 0); Out.String(" failed"); Out.Ln
 END Run;
