@@ -1,13 +1,18 @@
 WebNavigator - an HTML 4 browser with style sheets (CSS 2) for the desktop
 
-Open a page (http:// and file:// addresses; there is no HTTPS):
+Open a page (https://, http:// and file:// addresses); to go to another address, change it
+in one of these lines and middle click the line:
+  Desktops.OpenDoc "https://info.cern.ch/" (WebNavDocs.NewDoc) ~
+  Desktops.OpenDoc "https://example.com/" (WebNavDocs.NewDoc) ~
   Desktops.OpenDoc "file://WebNavigatorAbout.html" (WebNavDocs.NewDoc) ~
   Desktops.OpenDoc "file://WebNavTables.html" (WebNavDocs.NewDoc) ~
   Desktops.OpenDoc "file://WebNavFonts.html" (WebNavDocs.NewDoc) ~
-  Desktops.OpenDoc "http://info.cern.ch/" (WebNavDocs.NewDoc) ~
 
 A middle click on a link follows it; Back in the menu bar goes to the page before,
-Reload loads the page again.
+Reload loads the page again. https is TLS 1.3 (the tls package); servers that offer only
+older versions cannot be reached. Pages in UTF-8 are shown with the characters of the Oberon
+fonts: accented letters they lack lose their accents, other characters become "?". Scripts
+and most style sheets of today's pages are ignored.
 
 To open every http and file address with WebNavigator, change the section
 DocumentServices of Oberon.Text:
