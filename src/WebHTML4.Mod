@@ -63,8 +63,37 @@ VAR
 
 	PROCEDURE ^ThisChild*( element: Element;  name: ARRAY OF CHAR ): Element;  
 
+	(* polpo: an element of HTML 5 can make the parser close BODY and open another one (<title> inside
+		<header>): the contents of further HEAD and BODY elements are moved into the first one *)
+	PROCEDURE Merge( html: Element;  name: ARRAY OF CHAR );  
+	VAR first, e: Element;  o, c, prev, next: Object;  
+	BEGIN 
+		first := NIL;  prev := NIL;  o := html.objects;  
+		WHILE o # NIL DO 
+			next := o.next;  
+			IF (o IS Element) & (o( Element ).type # NIL) & (o( Element ).type.name = name) THEN 
+				e := o( Element );  
+				IF first = NIL THEN first := e;  prev := o
+				ELSE 
+					IF e.objects # NIL THEN 
+						IF first.lastObject = NIL THEN first.objects := e.objects ELSE first.lastObject.next := e.objects END;  
+						first.lastObject := e.lastObject;  c := e.objects;  
+						WHILE c # NIL DO 
+							IF c IS Element THEN c( Element ).parent := first END;  
+							c := c.next
+						END 
+					END;  
+					prev.next := next;  
+					IF html.lastObject = o THEN html.lastObject := prev END 
+				END 
+			ELSE prev := o
+			END;  
+			o := next
+		END 
+	END Merge;  
+
 	PROCEDURE Read*( file: Files.File ): Element;  
-	VAR sym: SHORTINT;  sgmlElementType: SGML.ElementType;  openTags: OpenTag;  sgml: Object;  
+	VAR sym: SHORTINT;  sgmlElementType: SGML.ElementType;  openTags: OpenTag;  sgml: Object;  html: Element;  
 
 		PROCEDURE AddOpenTag( name: ARRAY OF CHAR );  
 		VAR ot: OpenTag;  
@@ -210,9 +239,11 @@ VAR
 		IF sym > Scanner.anError THEN 
 			sgmlElementType := SGML.ThisElementType( HTML4SGML, "SGML" );  
 			sgml := ReadElement( sgmlElementType );  
-			RETURN ThisChild( sgml( Element ), "HTML" );  
-		END 
-		(* Trap *)
+			html := ThisChild( sgml( Element ), "HTML" );  
+			IF html # NIL THEN Merge( html, "HEAD" );  Merge( html, "BODY" ) END;  
+			RETURN html
+		END;  
+		RETURN NIL
 	END Read;  
 
 	PROCEDURE NewElement*( VAR e: Element;  type: SGML.ElementType );  
