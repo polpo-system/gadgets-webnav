@@ -88,7 +88,11 @@ TYPE
 				IF (url[i] = '/') & (bpath = 0) & (url[i - 1] # ':') & (url[i - 1] # '/') THEN bpath := i END;  
 				INC( i )
 			END;  
-			url[i] := 0X;  IF bpath = 0 THEN bpath := i 
+			url[i] := 0X;
+			IF (bpath = 0) & (link # "") & (i > 7) & (url[0] = 'f') & (url[1] = 'i') & (url[2] = 'l') & (url[3] = 'e') & (url[4] = ':') & (url[5] = '/') & (url[6] = '/') THEN
+				(* polpo: file://name is a file of the current directory, not a host: links go after file:// *)
+				i := 7;  url[7] := 0X;  bpath := 7
+			ELSIF bpath = 0 THEN bpath := i 
 			ELSE 
 				d := i; dnf := FALSE;
 				REPEAT 
