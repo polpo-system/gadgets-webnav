@@ -25,6 +25,9 @@ BEGIN
   Url("http://host/a/b.html", "c.html", "http://host/a/c.html");
   Url("http://host/a/b.html", "/d.html", "http://host/d.html");
   Url("http://host/a/b.html", "http://other/", "http://other/");
+  Url("file://page.html", "pic.png", "file://pic.png");  (* a file of the current directory, not a host *)
+  Url("file://page.html", "", "file://page.html");
+  Url("file://dir/page.html", "pic.png", "file://dir/pic.png");
   s := "http%3A//host/x%20y"; U.CleanURL(s); Check("CleanURL", s = "http://host/x y")
 END Urls;
 
