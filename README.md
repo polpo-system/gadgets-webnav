@@ -2,7 +2,7 @@
 
 WebNavigator for the desktop of [polpo](https://github.com/polpo-system/polpo): an HTML 4 browser
 with Cascading Style Sheets (CSS 2). It lays out headings, paragraphs, lists, tables, frames and
-GIF pictures, follows links and fetches pages over HTTP and HTTPS (TLS 1.3 of polpo's tls
+pictures (GIF, JPEG and PNG, through Pictures and the packages gif, jpeg and png), follows links and fetches pages over HTTP and HTTPS (TLS 1.3 of polpo's tls
 package), following redirects. Pages in UTF-8 are shown with the characters of the Oberon fonts.
 Scripts and most style sheets of today's pages are ignored.
 
@@ -53,7 +53,7 @@ body.
 
 ## Tests
 
-    WebNavTest.Run      21 checks: URLs, two pages parsed and laid out, a page of HTML 5, a
+    WebNavTest.Run      24 checks: URLs (of file:// pages too), two pages parsed and laid out, a page of HTML 5, a
                         document opened from a file; it needs the desktop's display
 
 The license is GPL-3 (`LICENSE`); the code comes from ETH Oberon, whose license (`LICENSE.ETH`)
