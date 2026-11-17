@@ -9,11 +9,12 @@ MODULE WebNetwork;
 *)
 
 IMPORT Kernel, Input, NetSystem, NetTools, Strings, HyperDocs, Texts, Oberon, Attributes, HTTPDocs0, 
-	Streams,   MIME, Files, Objects, Out, http, httpsPure, strTypes, U := WebUtils;  
+	Streams,   MIME, Files, Objects, Out, Internet, http, httpsPure, strTypes, U := WebUtils;  
 
 
 CONST 
 	IdentifyUser = FALSE;  
+	Timeout = 60000;  (* polpo: milliseconds a read or write of Fetch may wait *)
 
 TYPE 
 	Authorization = POINTER TO AuthorizationDesc;  
@@ -517,13 +518,13 @@ VAR
 	PROCEDURE Fetch( url: ARRAY OF CHAR;  VAR doctype: ARRAY OF CHAR ): Files.File;  
 	VAR h: http.Client;  body: strTypes.pstring;  F: Files.File;  R: Files.Rider;  
 		host: ARRAY 256 OF CHAR;  port: ARRAY 8 OF CHAR;  path, u, v: ARRAY 1024 OF CHAR;  
-		secure, utf8: BOOLEAN;  n, i, len, code: LONGINT;  
+		secure, utf8: BOOLEAN;  n, i, len, code, t: LONGINT;  
 	BEGIN 
 		COPY( "text", doctype );  COPY( url, u );  n := 0;  
 		LOOP 
 			IF ~SplitURL( u, secure, host, port, path ) THEN RETURN NIL END;  
 			IF secure THEN h := httpsPure.Create( host, port, path ) ELSE h := http.Create( host, port, path ) END;  
-			body := h.Get( h );  
+			t := Internet.timeout;  Internet.timeout := Timeout;  body := h.Get( h );  Internet.timeout := t;  
 			IF (body = NIL) OR (h.rspnCode < 300) OR (h.rspnCode >= 400) OR (h.rspnLocation = NIL) OR (n = 5) THEN EXIT END;  
 			U.NewUrl( u, h.rspnLocation^, v );  COPY( v, u );  INC( n )
 		END;  
